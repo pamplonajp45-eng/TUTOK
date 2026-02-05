@@ -1,0 +1,310 @@
+.leaderboard-page {
+  min-height: 100vh; /* ✅ Changed to min-height */
+  background:
+    linear-gradient(0deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+    radial-gradient(ellipse at center, #0a0e27 0%, #050816 100%);
+  background-size:
+    40px 40px,
+    40px 40px,
+    100% 100%;
+  padding: 40px 20px;
+  overflow-y: auto; /* ✅ Enable vertical scroll */
+  overflow-x: hidden; /* ✅ Prevent horizontal scroll */
+}
+
+.leaderboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-bottom: 40px; /* ✅ Add bottom padding */
+}
+
+.leaderboard-title {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.title-elite {
+  display: block;
+  font-family: "Orbitron", sans-serif;
+  font-size: 80px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 15px;
+  text-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+  line-height: 1.2; /* ✅ Add line-height */
+}
+
+.title-operators {
+  display: block;
+  font-family: "Orbitron", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #00ffff;
+  letter-spacing: 12px;
+  text-shadow: 0 0 20px #00ffff;
+  margin-top: 5px; /* ✅ Add spacing */
+}
+
+.leaderboard-subtitle {
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: #a0a0a0;
+  margin-bottom: 40px;
+}
+
+.back-btn {
+  padding: 12px 30px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: transparent;
+  border: 2px solid #00ffff;
+  color: #00ffff;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 30px;
+}
+
+.back-btn:hover {
+  background: rgba(0, 255, 255, 0.1);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+  transform: translateX(-5px);
+}
+
+.loading {
+  text-align: center;
+  font-family: "Orbitron", sans-serif;
+  font-size: 24px;
+  color: #00ffff;
+  padding: 100px 20px;
+  letter-spacing: 4px;
+}
+
+.leaderboard-table {
+  background: rgba(0, 255, 255, 0.02);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow-x: auto; /* ✅ Enable horizontal scroll if needed */
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 120px 120px 150px;
+  gap: 20px;
+  padding: 20px 30px;
+  background: rgba(0, 255, 255, 0.1);
+  border-bottom: 2px solid #00ffff;
+  font-family: "Orbitron", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: #00ffff;
+  min-width: 800px; /* ✅ Minimum width for scroll */
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 120px 120px 120px 150px;
+  gap: 20px;
+  padding: 20px 30px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+  transition: all 0.3s;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  min-width: 800px; /* ✅ Minimum width for scroll */
+}
+
+.table-row:hover {
+  background: rgba(0, 255, 255, 0.05);
+  border-left: 4px solid #00ffff;
+  padding-left: 26px;
+}
+
+.table-row.top-three {
+  background: rgba(255, 215, 0, 0.05);
+  border-left: 4px solid #ffd700;
+}
+
+.table-row.top-three:hover {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.row-rank {
+  color: #ff00ff;
+  font-family: "Orbitron", sans-serif;
+  font-weight: 900;
+  font-size: 20px;
+}
+
+.row-name {
+  color: #e0e0e0;
+  font-weight: 700;
+  overflow: hidden; /* ✅ Prevent overflow */
+  text-overflow: ellipsis; /* ✅ Add ellipsis */
+  white-space: nowrap; /* ✅ Prevent wrapping */
+}
+
+.row-score {
+  color: #00ffff;
+  font-family: "Orbitron", sans-serif;
+  font-weight: 900;
+  text-align: right;
+}
+
+.row-accuracy {
+  color: #a0a0a0;
+  text-align: right;
+}
+
+.row-reaction {
+  color: #a0a0a0;
+  text-align: right;
+}
+
+.row-date {
+  color: #666;
+  font-size: 14px;
+  text-align: right;
+}
+
+.no-data {
+  text-align: center;
+  padding: 100px 20px;
+  color: #a0a0a0;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+
+/* Tablets (968px and below) */
+@media (max-width: 968px) {
+  .leaderboard-page {
+    padding: 30px 15px;
+  }
+
+  .title-elite {
+    font-size: 60px;
+    letter-spacing: 10px;
+  }
+
+  .title-operators {
+    font-size: 24px;
+    letter-spacing: 8px;
+  }
+
+  .leaderboard-subtitle {
+    font-size: 12px;
+  }
+
+  .back-btn {
+    padding: 10px 20px;
+    font-size: 12px;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 60px 1fr 100px 100px;
+    gap: 15px;
+    padding: 15px 20px;
+    min-width: 600px; /* ✅ Adjusted for smaller screens */
+  }
+
+  .header-reaction,
+  .header-date,
+  .row-reaction,
+  .row-date {
+    display: none; /* ✅ Hide on tablets */
+  }
+}
+
+/* Mobile (600px and below) */
+@media (max-width: 600px) {
+  .leaderboard-page {
+    padding: 20px 10px;
+  }
+
+  .title-elite {
+    font-size: 42px;
+    letter-spacing: 6px;
+  }
+
+  .title-operators {
+    font-size: 18px;
+    letter-spacing: 6px;
+  }
+
+  .leaderboard-subtitle {
+    font-size: 10px;
+    letter-spacing: 2px;
+  }
+
+  .back-btn {
+    padding: 10px 15px;
+    font-size: 11px;
+    width: 100%; /* ✅ Full width on mobile */
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 50px 1fr 80px;
+    gap: 10px;
+    padding: 12px 15px;
+    min-width: 400px; /* ✅ Adjusted for mobile */
+    font-size: 14px;
+  }
+
+  .header-accuracy,
+  .row-accuracy {
+    display: none; /* ✅ Hide accuracy on mobile */
+  }
+
+  .row-rank {
+    font-size: 16px;
+  }
+
+  .loading {
+    font-size: 18px;
+    padding: 60px 15px;
+  }
+
+  .no-data {
+    font-size: 16px;
+    padding: 60px 15px;
+  }
+}
+
+/* Extra small (360px and below) */
+@media (max-width: 360px) {
+  .title-elite {
+    font-size: 32px;
+    letter-spacing: 4px;
+  }
+
+  .title-operators {
+    font-size: 14px;
+    letter-spacing: 4px;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 45px 1fr 70px;
+    gap: 8px;
+    padding: 10px 12px;
+    min-width: 320px;
+    font-size: 12px;
+  }
+
+  .row-rank {
+    font-size: 14px;
+  }
+}
