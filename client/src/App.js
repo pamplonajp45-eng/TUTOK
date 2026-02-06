@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Game from "./Game";
 import Leaderboard from "./Leaderboards";
+import Settings from "./settings";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Game />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/Settings" element={<Settings />} />
       </Routes>
     </Router>
   );

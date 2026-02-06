@@ -1,4 +1,3 @@
-// test change
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Settings.css";
@@ -63,8 +62,8 @@ function Settings() {
             </div>
             <input
               type="range"
-              min="0"
-              max="1"
+              min="0.1"
+              max="3.0"
               step="0.05"
               value={settings.sensitivity}
               onChange={(e) =>
@@ -73,7 +72,35 @@ function Settings() {
               className="slider"
             />
 
-            <div className="setting-info"></div>
+            <div className="setting-info">
+              <span>Slow (0.1x)</span>
+              <span className="valorant-equiv">
+                ≈ Valorant: {valorantSens}{" "}
+              </span>
+              <span>Fast (3.0x)</span>
+            </div>
+            <p className="setting-description">
+              Adjust how fast your cursor moves. Lower = more precise, Higher =
+              faster flicks.
+            </p>
+          </div>
+          {/*Crosshair Size*/}
+          <div className="setting-section">
+            <div className="setting-header">
+              <h3>CROSSHAIR SIZE</h3>
+              <span className="setting-value">{settings.crosshairSize}px</span>
+            </div>
+            <input
+              type="range"
+              min="20"
+              max="80"
+              step="5"
+              value={settings.crosshairSize}
+              onChange={(e) =>
+                handleChange("crosshairSize", parseInt(e.target.value))
+              }
+              className="slider"
+            />
           </div>
         </div>
       </div>
