@@ -101,6 +101,19 @@ function Settings() {
               }
               className="slider"
             />
+
+            <div
+              className="crosshair-preview"
+              style={{
+                width: `${settings.crosshairSize}px`,
+                height: `${settings.crosshairSize}px`,
+              }}
+            >
+              <div
+                className="preview-crosshair"
+                style={{ "--crosshair-color": settings.crosshairColor }}
+              ></div>
+            </div>
           </div>
         </div>
       </div>
