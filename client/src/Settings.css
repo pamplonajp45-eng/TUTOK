@@ -1,0 +1,341 @@
+.settings-page {
+  min-height: 100vh;
+  background:
+    linear-gradient(0deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+    radial-gradient(ellipse at center, #0a0e27 0%, #050816 100%);
+  background-size:
+    40px 40px,
+    40px 40px,
+    100% 100%;
+  padding: 40px 20px;
+  overflow-y: auto;
+}
+
+.settings-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.settings-title {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.title-settings {
+  display: block;
+  font-family: "Orbitron", sans-serif;
+  font-size: 80px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 15px;
+}
+
+.settings-subtitle {
+  text-align: center;
+  font-size: 14px;
+  letter-spacing: 4px;
+  color: #a0a0a0;
+  margin-bottom: 40px;
+}
+
+.settings-content {
+  background: rgba(0, 255, 255, 0.02);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  padding: 40px;
+  border-radius: 4px;
+}
+
+.setting-section {
+  margin-bottom: 50px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+}
+
+.setting-section:last-child {
+  border-bottom: none;
+}
+
+.setting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.setting-header h3 {
+  font-family: "Orbitron", sans-serif;
+  font-size: 16px;
+  letter-spacing: 3px;
+  color: #00ffff;
+  margin: 0;
+}
+
+.setting-value {
+  font-family: "Orbitron", sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #ff00ff;
+}
+
+.slider {
+  width: 100%;
+  height: 8px;
+  background: rgba(0, 255, 255, 0.1);
+  outline: none;
+  border-radius: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 10px 0;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  cursor: pointer;
+  border-radius: 50%;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  cursor: pointer;
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.setting-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+.valorant-equiv {
+  color: #ff00ff;
+  font-family: "Orbitron", sans-serif;
+  font-weight: 700;
+}
+
+.setting-description {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #a0a0a0;
+  line-height: 1.6;
+}
+
+.crosshair-preview {
+  margin: 20px auto;
+  background: rgba(10, 14, 39, 0.5);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.preview-crosshair {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-crosshair::before,
+.preview-crosshair::after {
+  content: "";
+  position: absolute;
+  background: var(--crosshair-color);
+  box-shadow: 0 0 10px var(--crosshair-color);
+}
+
+.preview-crosshair::before {
+  width: 50%;
+  height: 2px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.preview-crosshair::after {
+  width: 2px;
+  height: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.color-picker-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.color-picker {
+  width: 60px;
+  height: 60px;
+  border: 2px solid #00ffff;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.color-presets {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.color-preset {
+  width: 40px;
+  height: 40px;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.color-preset:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 20px currentColor;
+}
+
+.color-preset.active {
+  border-color: #00ffff;
+  box-shadow: 0 0 30px #00ffff;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.option-btn {
+  flex: 1;
+  min-width: 150px;
+  padding: 15px 20px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  background: rgba(0, 255, 255, 0.05);
+  border: 2px solid rgba(0, 255, 255, 0.3);
+  color: #00ffff;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.option-btn:hover {
+  background: rgba(0, 255, 255, 0.1);
+  border-color: #00ffff;
+}
+
+.option-btn.active {
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  border-color: transparent;
+  color: #050816;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 255, 255, 0.1);
+  transition: 0.4s;
+  border-radius: 34px;
+  border: 2px solid rgba(0, 255, 255, 0.3);
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #666;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background: linear-gradient(135deg, #00ffff, #ff00ff);
+  border-color: transparent;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(26px);
+  background-color: #050816;
+}
+
+.reset-btn {
+  width: 100%;
+  padding: 18px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  background: transparent;
+  border: 2px solid #ff0000;
+  color: #ff0000;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.reset-btn:hover {
+  background: rgba(255, 0, 0, 0.1);
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .settings-content {
+    padding: 20px;
+  }
+
+  .title-settings {
+    font-size: 50px;
+    letter-spacing: 8px;
+  }
+
+  .button-group {
+    flex-direction: column;
+  }
+
+  .option-btn {
+    min-width: 100%;
+  }
+
+  .color-picker-container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

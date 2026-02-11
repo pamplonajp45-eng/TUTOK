@@ -20,7 +20,7 @@ function Settings() {
     });
   }, [settings]);
 
-  const handleChange = (e) => {
+  const handleChange = (key, value) => {
     setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -53,8 +53,8 @@ function Settings() {
 
         <div className="settings-content">
           {/*Sens*/}
-          <div className="settings-section">
-            <div className="settings-header">
+          <div className="setting-section">
+            <div className="setting-header">
               <h3>MOUSE SENSITIVITY</h3>
               <span className="setting-value">
                 {settings.sensitivity.toFixed(2)}x
@@ -114,6 +114,82 @@ function Settings() {
                 style={{ "--crosshair-color": settings.crosshairColor }}
               ></div>
             </div>
+          </div>
+
+          <div className="setting-section">
+            <div className="setting-header">
+              <h3>CROSSHAIR COLOR</h3>
+              <span className="setting-value">{settings.crosshairColor}</span>
+            </div>
+            <div className="color-picker-container">
+              <input
+                type="color"
+                value={settings.crosshairColor}
+                onChange={(e) => handleChange("crosshairColor", e.target.value)}
+                className="color-picker"
+              />
+
+              <div className="color-presets">
+                {[
+                  "#00ffff",
+                  "#ff00ff",
+                  "#ffff00",
+                  "#00ff00",
+                  "#ff0000",
+                  "#ffffff",
+                ].map((color) => (
+                  <button
+                    key={color}
+                    className="color-preset"
+                    style={{ backgroundColor: color }}
+                    onClick={() => handleChange("crosshairColor", color)}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/*volume*/}
+          <div className="setting-section">
+            <div className="setting-header">
+              <h3>SOUND EFFECTS VOLUME</h3>
+              <span className="setting-value">
+                {Math.round(settings.gameVolume * 100)}%
+              </span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={settings.gameVolume}
+              onChange={(e) =>
+                handleChange("gameVolume", parseFloat(e.target.value))
+              }
+              className="slider"
+            />
+          </div>
+
+          {/* SHOW FPS */}
+          <div className="setting-section">
+            <div className="setting-header">
+              <h3>SHOW FPS COUNTER</h3>
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={settings.showFPS}
+                  onChange={(e) => handleChange("showFPS", e.target.checked)}
+                />
+                <span className="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          {/* RESET BUTTON */}
+          <div className="setting-section">
+            <button onClick={resetSettings} className="reset-btn">
+              RESET TO DEFAULT SETTINGS
+            </button>
           </div>
         </div>
       </div>

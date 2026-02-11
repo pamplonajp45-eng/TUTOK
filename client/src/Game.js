@@ -3,6 +3,32 @@ import axios from "axios";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
 
+const GearIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="24"
+    height="24"
+    className="gear-svg"
+  >
+    <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+  </svg>
+);
+
+
+const TrophyIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    width="24"
+    height="24"
+    className="trophy-svg"
+  >
+    <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v3c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.11c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 10V7h2v3H5zm12 0V7h2v3h-2z" />
+  </svg>
+
+)
+
 function App() {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState("menu"); // menu, playing, results
@@ -16,6 +42,7 @@ function App() {
     reactionTimes: [],
   });
   const [leaderboard, setLeaderboard] = useState([]);
+  const [fps, setFps] = useState(0);
 
   const gameEndedRef = useRef(false);
   const gameAreaRef = useRef(null);
@@ -46,10 +73,26 @@ function App() {
   // Spawn target
   const spawnTarget = () => {
     const id = Date.now() + Math.random();
-    const size = Math.random() * 30 + 40;
+
+    // Apply target size from settings
+    let minSize, maxSize;
+    switch (gameSettings.targetSize) {
+      case "small":
+        minSize = 30;
+        maxSize = 50;
+        break;
+      case "large":
+        minSize = 60;
+        maxSize = 100;
+        break;
+      default: // medium
+        minSize = 40;
+        maxSize = 70;
+    }
+
+    const size = Math.random() * (maxSize - minSize) + minSize;
     const x = Math.random() * (window.innerWidth - size - 40) + 20;
     const y = Math.random() * (window.innerHeight - size - 200) + 100;
-
     const newTarget = { id, x, y, size };
     setTargets((prev) => [...prev, newTarget]);
     targetCreationTime.current[id] = Date.now();
@@ -182,7 +225,7 @@ function App() {
     const avgReactionTime =
       finalStats.reactionTimes.length > 0
         ? finalStats.reactionTimes.reduce((a, b) => a + b, 0) /
-          finalStats.reactionTimes.length
+        finalStats.reactionTimes.length
         : 0;
 
     const dataToSave = {
@@ -212,6 +255,63 @@ function App() {
     fetchLeaderboard();
   };
 
+  // At the top of Game component, load settings
+  const [gameSettings, setGameSettings] = useState({
+    sensitivity: parseFloat(localStorage.getItem("sensitivity")) || 1.0,
+    crosshairSize: parseInt(localStorage.getItem("crosshairSize")) || 40,
+    crosshairColor: localStorage.getItem("crosshairColor") || "#ffffff", // Default to white
+    targetSize: localStorage.getItem("targetSize") || "medium",
+    gameVolume: parseFloat(localStorage.getItem("gameVolume")) || 0.5,
+    showFPS: localStorage.getItem("showFPS") === "true",
+  });
+
+  // Reload settings when returning to game
+  useEffect(() => {
+    const handleFocus = () => {
+      setGameSettings({
+        sensitivity: parseFloat(localStorage.getItem("sensitivity")) || 1.0,
+        crosshairSize: parseInt(localStorage.getItem("crosshairSize")) || 40,
+        crosshairColor: localStorage.getItem("crosshairColor") || "#ffffff",
+        targetSize: localStorage.getItem("targetSize") || "medium",
+        gameVolume: parseFloat(localStorage.getItem("gameVolume")) || 0.5,
+        showFPS: localStorage.getItem("showFPS") === "true",
+      });
+    };
+
+    window.addEventListener("focus", handleFocus);
+    window.addEventListener("storage", handleFocus);
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      window.removeEventListener("storage", handleFocus);
+    };
+  }, []);
+
+  // FPS Counter Logic
+  useEffect(() => {
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let frameId;
+
+    const updateFPS = () => {
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        setFps(frameCount);
+        frameCount = 0;
+        lastTime = now;
+      }
+      frameId = requestAnimationFrame(updateFPS);
+    };
+
+    if (gameSettings.showFPS) {
+      frameId = requestAnimationFrame(updateFPS);
+    } else {
+      setFps(0);
+    }
+
+    return () => cancelAnimationFrame(frameId);
+  }, [gameSettings.showFPS]);
+
   return (
     <div className="App">
       {/* MENU SCREEN */}
@@ -240,6 +340,22 @@ function App() {
               LEZ GO!
             </button>
 
+            <button
+              onClick={() => navigate("/settings")}
+              className="settings-icon-btn"
+              title="Settings"
+            >
+              <GearIcon />
+            </button>
+
+            <button
+              onClick={() => navigate("/leaderboards")}
+              className="trophy-icon-btn"
+              title="Leaderboard"
+            >
+              <TrophyIcon />
+            </button>
+
             <div className="instructions">
               <h3>MISSION PARAMETERS</h3>
               <div className="instruction-item">
@@ -253,31 +369,6 @@ function App() {
               </div>
             </div>
 
-            {leaderboard.length > 0 && (
-              <div className="leaderboard">
-                <div className="leaderboard-header">
-                  <h3>Mga Palo</h3>
-                  <button
-                    onClick={() => navigate("/leaderboard")}
-                    className="view-all-btn"
-                  >
-                    VIEW ALL →
-                  </button>
-                </div>
-                <div className="leaderboard-list">
-                  {leaderboard.slice(0, 5).map((entry, index) => (
-                    <div key={entry._id} className="leaderboard-item">
-                      <span className="rank">#{index + 1}</span>
-                      <span className="name">{entry.playerName}</span>
-                      <span className="score">{entry.score}</span>
-                      <span className="accuracy">
-                        {entry.accuracy.toFixed(1)}%
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}
@@ -290,6 +381,16 @@ function App() {
               <span className="hud-label">SCORE</span>
               <span className="hud-value">{score}</span>
             </div>
+            {/* Dynamic Crosshair */}
+            <div
+              className="crosshair"
+              style={{
+                width: `${gameSettings.crosshairSize}px`,
+                height: `${gameSettings.crosshairSize}px`,
+                "--crosshair-color": gameSettings.crosshairColor,
+              }}
+            ></div>
+
             <div className="hud-item">
               <span className="hud-label">TIME</span>
               <span className="hud-value">{timeLeft}s</span>
@@ -303,12 +404,19 @@ function App() {
               <span className="hud-value">
                 {stats.hits + stats.misses > 0
                   ? ((stats.hits / (stats.hits + stats.misses)) * 100).toFixed(
-                      0,
-                    )
+                    0,
+                  )
                   : 0}
                 %
               </span>
             </div>
+
+            {gameSettings.showFPS && (
+              <div className="hud-item fps-counter">
+                <span className="hud-label">FPS</span>
+                <span className="hud-value">{fps}</span>
+              </div>
+            )}
           </div>
 
           {targets.map((target) => (
@@ -349,9 +457,9 @@ function App() {
                 <div className="result-value">
                   {stats.hits + stats.misses > 0
                     ? (
-                        (stats.hits / (stats.hits + stats.misses)) *
-                        100
-                      ).toFixed(1)
+                      (stats.hits / (stats.hits + stats.misses)) *
+                      100
+                    ).toFixed(1)
                     : 0}
                   %
                 </div>
@@ -367,9 +475,9 @@ function App() {
                 <div className="result-value">
                   {stats.reactionTimes.length > 0
                     ? (
-                        stats.reactionTimes.reduce((a, b) => a + b, 0) /
-                        stats.reactionTimes.length
-                      ).toFixed(0)
+                      stats.reactionTimes.reduce((a, b) => a + b, 0) /
+                      stats.reactionTimes.length
+                    ).toFixed(0)
                     : 0}
                   ms
                 </div>
