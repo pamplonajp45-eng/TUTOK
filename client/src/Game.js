@@ -31,6 +31,19 @@ const TrophyIcon = () => (
 
 function App() {
   const navigate = useNavigate();
+  const [gameSettings, setGameSettings] = useState({
+    sensitivity: parseFloat(localStorage.getItem("sensitivity")) || 1.0,
+    crosshairSize: parseInt(localStorage.getItem("crosshairSize")) || 40,
+    crosshairColor: localStorage.getItem("crosshairColor") || "#ffffff",
+    targetSize: localStorage.getItem("targetSize") || "medium",
+    gameVolume: parseFloat(localStorage.getItem("gameVolume")) || 0.5,
+    showFPS: localStorage.getItem("showFPS") === "true",
+  });
+
+  const [virtualCursor, setVirtualCursor] = useState({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2
+  })
   const [gameState, setGameState] = useState("menu"); // menu, playing, results
   const [playerName, setPlayerName] = useState("");
   const [targets, setTargets] = useState([]);
@@ -134,7 +147,18 @@ function App() {
     // Reset refs
     scoreRef.current = 0;
     statsRef.current = { hits: 0, misses: 0, reactionTimes: [] };
-    gameEndedRef.current = false; // ✅ Reset the flag
+    gameEndedRef.current = false;
+
+    setVirtualCursor({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2
+    })
+
+    setTimeout(() => {
+      if (gameAreaRef.current) {
+        gameAreaRef.current.requestPointerLock();
+      }
+    }, 100);
 
     // Spawn targets
     targetSpawnInterval.current = setInterval(() => {
@@ -152,6 +176,24 @@ function App() {
       });
     }, 1000);
   };
+
+  const handleMouseMove = useCallback((event) => {
+    const deltaX = event.movementX || 0;
+    const deltaY = event.movementY || 0;
+
+    const sensitivity = gameSettings.sensitivity || 1.0;
+
+    setVirtualCursor(prev => {
+      let newX = prev.x + (deltaX * sensitivity);
+      let newY = prev.y + (deltaY * sensitivity);
+
+      newX = Math.max(0, Math.min(newX, window.innerWidth));
+      newY = Math.max(0, Math.min(newY, window.innerHeight));
+
+      return { x: newX, y: newY };
+    });
+  }, [gameSettings.sensitivity]);
+
 
   const hitTarget = (targetId) => {
     const reactionTime = Date.now() - targetCreationTime.current[targetId];
@@ -178,23 +220,41 @@ function App() {
     });
   };
 
-  // Miss
-  const handleMiss = (e) => {
-    if (e.target === gameAreaRef.current) {
-      // Update stats for miss
-      setStats((prev) => {
+  const handleGameAreaClick = (e) => {
+    // Check if we hit a target
+    let hitSomething = false;
+
+    targets.forEach(target => {
+      // Calculate distance from virtual cursor to target center
+      const targetCenterX = target.x + target.size / 2;
+      const targetCenterY = target.y + target.size / 2;
+
+      const distance = Math.sqrt(
+        Math.pow(virtualCursor.x - targetCenterX, 2) +
+        Math.pow(virtualCursor.y - targetCenterY, 2)
+      );
+
+      // Check if cursor is within target radius
+      if (distance <= target.size / 2) {
+        hitTarget(target.id);
+        hitSomething = true;
+      }
+    });
+
+    // If didn't hit anything, it's a miss
+    if (!hitSomething) {
+      setStats(prev => {
         const newStats = {
           ...prev,
-          misses: prev.misses + 1,
+          misses: prev.misses + 1
         };
-        statsRef.current = newStats; // ✅ Update ref
+        statsRef.current = newStats;
         return newStats;
       });
 
-      // Update score
-      setScore((prev) => {
+      setScore(prev => {
         const newScore = Math.max(0, prev - 10);
-        scoreRef.current = newScore; // ✅ Update ref
+        scoreRef.current = newScore;
         return newScore;
       });
     }
@@ -255,15 +315,20 @@ function App() {
     fetchLeaderboard();
   };
 
-  // At the top of Game component, load settings
-  const [gameSettings, setGameSettings] = useState({
-    sensitivity: parseFloat(localStorage.getItem("sensitivity")) || 1.0,
-    crosshairSize: parseInt(localStorage.getItem("crosshairSize")) || 40,
-    crosshairColor: localStorage.getItem("crosshairColor") || "#ffffff", // Default to white
-    targetSize: localStorage.getItem("targetSize") || "medium",
-    gameVolume: parseFloat(localStorage.getItem("gameVolume")) || 0.5,
-    showFPS: localStorage.getItem("showFPS") === "true",
-  });
+
+
+  useEffect(() => {
+    if (gameState === 'playing') {
+      document.addEventListener('mousemove', handleMouseMove);
+
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        if (document.pointerLockElement) {
+          document.exitPointerLock();
+        }
+      };
+    }
+  }, [gameState, handleMouseMove]);
 
   // Reload settings when returning to game
   useEffect(() => {
@@ -374,22 +439,17 @@ function App() {
       )}
 
       {/* GAME SCREEN */}
-      {gameState === "playing" && (
-        <div className="game-area" ref={gameAreaRef} onClick={handleMiss}>
+      {gameState === 'playing' && (
+        <div
+          className="game-area"
+          ref={gameAreaRef}
+          onClick={handleGameAreaClick}
+        >
           <div className="hud">
             <div className="hud-item">
               <span className="hud-label">SCORE</span>
               <span className="hud-value">{score}</span>
             </div>
-            {/* Dynamic Crosshair */}
-            <div
-              className="crosshair"
-              style={{
-                width: `${gameSettings.crosshairSize}px`,
-                height: `${gameSettings.crosshairSize}px`,
-                "--crosshair-color": gameSettings.crosshairColor,
-              }}
-            ></div>
 
             <div className="hud-item">
               <span className="hud-label">TIME</span>
@@ -419,7 +479,20 @@ function App() {
             )}
           </div>
 
-          {targets.map((target) => (
+
+          <div
+            className="crosshair"
+            style={{
+              left: `${virtualCursor.x}px`,
+              top: `${virtualCursor.y}px`,
+              width: `${gameSettings.crosshairSize}px`,
+              height: `${gameSettings.crosshairSize}px`,
+              '--crosshair-color': gameSettings.crosshairColor
+            }}
+          ></div>
+
+
+          {targets.map(target => (
             <div
               key={target.id}
               className="target"
@@ -427,12 +500,9 @@ function App() {
                 left: `${target.x}px`,
                 top: `${target.y}px`,
                 width: `${target.size}px`,
-                height: `${target.size}px`,
+                height: `${target.size}px`
               }}
-              onClick={(e) => {
-                e.stopPropagation();
-                hitTarget(target.id);
-              }}
+
             >
               <div className="target-inner"></div>
             </div>

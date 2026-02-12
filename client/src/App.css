@@ -306,18 +306,25 @@ body {
   }
 }
 
+
+.game-area {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  cursor: none;
+  overflow: hidden;
+}
+
 .crosshair {
-  position: fixed;
+  position: absolute;
   pointer-events: none;
   z-index: 1000;
-  top: 50%;
-  left: 50%;
   transform: translate(-50%, -50%);
 }
 
 .crosshair::before,
 .crosshair::after {
-  content: "";
+  content: '';
   position: absolute;
   background: var(--crosshair-color, #00ffff);
   box-shadow: 0 0 10px var(--crosshair-color, #00ffff);
@@ -367,17 +374,13 @@ body {
   }
 }
 
-/* RESULTS */
 .results {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  /* ✅ Changed to min-height */
   padding: 40px 20px;
-  /* ✅ Add padding */
   overflow-y: auto;
-  /* ✅ Enable scrolling */
 }
 
 .results-content {
