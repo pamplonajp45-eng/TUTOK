@@ -31,6 +31,8 @@ const TrophyIcon = () => (
 
 function App() {
   const navigate = useNavigate();
+  const [isPaused, setIsPaused] = useState(false);
+  const isPausedRef = useRef(isPaused);
   const [gameSettings, setGameSettings] = useState({
     sensitivity: parseFloat(localStorage.getItem("sensitivity")) || 1.0,
     crosshairSize: parseInt(localStorage.getItem("crosshairSize")) || 40,
@@ -85,6 +87,7 @@ function App() {
 
   // Spawn target
   const spawnTarget = () => {
+    if (isPausedRef.current) return;
     const id = Date.now() + Math.random();
 
     // Apply target size from settings
@@ -167,17 +170,20 @@ function App() {
 
     // Game timer
     gameTimer.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          endGame();
-          return 0;
-        }
-        return prev - 1;
-      });
+      if (!isPausedRef.current) {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            endGame();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }
     }, 1000);
   };
 
   const handleMouseMove = useCallback((event) => {
+    if (isPausedRef.current) return;
     const deltaX = event.movementX || 0;
     const deltaY = event.movementY || 0;
 
@@ -251,6 +257,8 @@ function App() {
         statsRef.current = newStats;
         return newStats;
       });
+
+      if (isPaused) return;
 
       setScore(prev => {
         const newScore = Math.max(0, prev - 10);
@@ -377,6 +385,30 @@ function App() {
     return () => cancelAnimationFrame(frameId);
   }, [gameSettings.showFPS]);
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setIsPaused(prev => {
+          const newPausedState = !prev;
+          isPausedRef.current = newPausedState;
+
+          if (newPausedState) {
+            document.exitPointerLock();
+          } else {
+            gameAreaRef.current?.requestPointerLock();
+          }
+          return newPausedState;
+        });
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    }
+  }, []);
+
+
   return (
     <div className="App">
       {/* MENU SCREEN */}
@@ -478,6 +510,17 @@ function App() {
               </div>
             )}
           </div>
+
+          {isPaused && (
+            <div className="pause-overlay">
+              <div className="pause-menu">
+                <h2>TRAINING PAUSED</h2>
+                <button onClick={() => { setIsPaused(false); isPausedRef.current = false }}>RESUME TRAINING</button>
+                <button onClick={() => navigate('/settings')}>SETTINGS</button>
+                <button onClick={() => setGameState('menu')}>ABANDON TRAINING</button>
+              </div>
+            </div>
+          )}
 
 
           <div
