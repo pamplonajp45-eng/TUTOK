@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Settings.css";
 
-function Settings() {
+function Settings({ onReturn, isOverlay }) {
   const navigate = useNavigate();
 
   const [settings, setSettings] = useState({
@@ -47,8 +47,17 @@ function Settings() {
         </h1>
         <p className="settings-subtitle"> CUSTOMIZE YOUR TRAINING EXPERIENCE</p>
 
-        <button onClick={() => navigate("/")} className="back-btn">
-          ← RETURN TO MENU
+        <button
+          onClick={() => {
+            if (isOverlay) {
+              onReturn();
+            } else {
+              navigate("/");
+            }
+          }}
+          className="back-btn"
+        >
+          ← {isOverlay ? "RETURN TO GAME" : "RETURN TO MENU"}
         </button>
 
         <div className="settings-content">
