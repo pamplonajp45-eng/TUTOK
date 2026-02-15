@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import axios from "axios";
 import "./App.css";
 import { useNavigate } from "react-router-dom";
+import Settings from "./Settings";
 
 const GearIcon = () => (
   <svg
@@ -31,6 +32,7 @@ const TrophyIcon = () => (
 
 function App() {
   const navigate = useNavigate();
+  const [showSettings, setShowSettings] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const isPausedRef = useRef(isPaused);
   const [gameSettings, setGameSettings] = useState({
@@ -131,12 +133,26 @@ function App() {
     }, TARGET_LIFETIME);
   };
 
+
+  const cleanupGame = () => {
+    if (targetSpawnInterval.current) {
+      clearInterval(targetSpawnInterval.current);
+      targetSpawnInterval.current = null;
+    }
+    if (gameTimer.current) {
+      clearInterval(gameTimer.current);
+      gameTimer.current = null;
+    }
+  };
+
   // In the startGame function, add logs:
   const startGame = () => {
     if (!playerName.trim()) {
       alert("Please enter your name!");
       return;
     }
+
+    cleanupGame();
 
     console.log("🎮 Game Starting!");
 
@@ -277,8 +293,10 @@ function App() {
     gameEndedRef.current = true;
     console.log(" Ending game...");
 
-    clearInterval(targetSpawnInterval.current);
-    clearInterval(gameTimer.current);
+    gameEndedRef.current = true;
+    console.log(" Ending game...");
+
+    cleanupGame();
     setTargets([]);
     setGameState("results");
 
@@ -319,6 +337,7 @@ function App() {
   };
 
   const returnToMenu = () => {
+    cleanupGame();
     setGameState("menu");
     fetchLeaderboard();
   };
