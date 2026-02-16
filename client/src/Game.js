@@ -115,7 +115,7 @@ function App() {
     setTargets((prev) => [...prev, newTarget]);
     targetCreationTime.current[id] = Date.now();
 
-    // Remove target after lifetime
+
     setTimeout(() => {
       setTargets((prev) => prev.filter((t) => t.id !== id));
       if (targetCreationTime.current[id]) {
@@ -407,6 +407,8 @@ function App() {
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (event.key === 'Escape') {
+        if (gameState !== 'playing') return;
+
         setIsPaused(prev => {
           const newPausedState = !prev;
           isPausedRef.current = newPausedState;
@@ -425,7 +427,7 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
-  }, []);
+  }, [gameState]);
 
 
   return (
@@ -530,14 +532,30 @@ function App() {
             )}
           </div>
 
-          {isPaused && (
+          {isPaused && !showSettings && (
             <div className="pause-overlay">
               <div className="pause-menu">
                 <h2>TRAINING PAUSED</h2>
-                <button onClick={() => { setIsPaused(false); isPausedRef.current = false }}>RESUME TRAINING</button>
-                <button onClick={() => navigate('/settings')}>SETTINGS</button>
-                <button onClick={() => setGameState('menu')}>ABANDON TRAINING</button>
+                <button onClick={() => {
+                  setIsPaused(false);
+                  isPausedRef.current = false;
+                  gameAreaRef.current.requestPointerLock();
+                }}>RESUME TRAINING</button>
+                <button onClick={() => setShowSettings(true)}>SETTINGS</button>
+                <button onClick={returnToMenu}>ABANDON TRAINING</button>
               </div>
+            </div>
+          )}
+
+          {isPaused && showSettings && (
+            <div className="settings-overlay" style={{
+              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+              zIndex: 100, backgroundColor: '#050816'
+            }}>
+              <Settings
+                isOverlay={true}
+                onReturn={() => setShowSettings(false)}
+              />
             </div>
           )}
 
