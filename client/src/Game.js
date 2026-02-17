@@ -243,6 +243,8 @@ function App() {
   };
 
   const handleGameAreaClick = (e) => {
+    if (isPaused) return;
+
     // Check if we hit a target
     let hitSomething = false;
 
@@ -274,7 +276,6 @@ function App() {
         return newStats;
       });
 
-      if (isPaused) return;
 
       setScore(prev => {
         const newScore = Math.max(0, prev - 10);
@@ -338,6 +339,8 @@ function App() {
 
   const returnToMenu = () => {
     cleanupGame();
+    setIsPaused(false);
+    isPausedRef.current = false;
     setGameState("menu");
     fetchLeaderboard();
   };
@@ -427,6 +430,22 @@ function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     }
+  }, [gameState]);
+
+  // Sync pointer lock state with pause state
+  useEffect(() => {
+    const handlePointerLockChange = () => {
+      if (!document.pointerLockElement && gameState === 'playing' && !isPausedRef.current) {
+        // Pointer lock lost (e.g. user pressed Esc), ensuring game is paused
+        setIsPaused(true);
+        isPausedRef.current = true;
+      }
+    };
+
+    document.addEventListener('pointerlockchange', handlePointerLockChange);
+    return () => {
+      document.removeEventListener('pointerlockchange', handlePointerLockChange);
+    };
   }, [gameState]);
 
 
